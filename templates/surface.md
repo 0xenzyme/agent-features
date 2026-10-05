@@ -27,13 +27,13 @@ docs:
 
 ## 2. 指令文件与优先级
 
-必答：`AGENTS.md`、`CLAUDE.md`、其他官方会读的文件。写项目级和用户级谁覆盖谁。默认不读的文件写「不读取」。
+必答：`AGENTS.md`、`CLAUDE.md`、`CODEBUDDY.md`、其他官方会读的文件。写项目级和用户级谁覆盖谁。默认不读的文件写「不读取」。
 
 来源：
 
 ## 3. Skill 目录
 
-必答：项目级、用户级、插件级的路径、格式和发现规则。同名 skill 是否合并。
+必答：项目级、用户级、插件级的路径、格式和发现规则。同名 skill 是否合并。总表里已经出现的 skill 路径都要回答，包括 `.agents/skills`、`~/.agents/skills`、`.claude/skills`、`~/.claude/skills`、`.cursor/skills`、`~/.cursor/skills`、`.codex/skills`、`~/.codex/skills`、`.grok/skills`、`~/.grok/skills`、`.codebuddy/skills`、`~/.codebuddy/skills`。文档的发现表没有列出的路径写「不读取」。文档没有提到的路径写「未查证」。
 
 来源：
 
@@ -45,6 +45,7 @@ docs:
 - plan mode
 - 定时任务
 - memory
+- 插件市场或插件分发单位
 - 文档点名的捆绑 skill
 
 同一能力若也是工具，这里写有无，第 5 节写调用形态。
@@ -62,6 +63,8 @@ docs:
 - MCP
 - 浏览器
 - 网页搜索
+- 外部消息渠道（把 IM 或 webhook 事件推进会话）
+- 常驻守护进程（脱离终端的后台服务）
 
 清单外的新工具写在下面。发现新的分叉工具时，先把这一行补进模板和总表，再把已完成表面标成「未回填」。
 
