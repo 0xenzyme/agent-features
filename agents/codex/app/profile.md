@@ -17,6 +17,8 @@ docs:
 
 未查证项：内嵌引擎版本；桌面应用是否读取 `config.toml` 的每一个键；桌面应用和 CLI 是否共享同一份 `auth.json`；Codex 聊天里的浏览器和 Computer Use 是否与 Chat 聊天同一套；Codex 聊天是否使用和 CLI 相同的 `web_search` 工具。
 
+2026-10-05 回填：发现表按范围穷举，上面那六条路径加 `.codebuddy/skills`、`~/.codebuddy/skills` 都不在表里，全部记为不读取。详见第 3 节。
+
 ## 1. 身份与版本
 
 - 官方名：ChatGPT desktop app。Codex 是里面的一个产品模式，用产品选择器进入。
@@ -31,6 +33,8 @@ docs:
 
 `AGENTS.md` 的发现规则写在 Codex 文档里，示例命令是 CLI。文档没有为桌面应用另写一套发现算法。按这套规则，全局层在 `~/.codex`，项目层从根走到当前目录，默认文件名不包括 `CLAUDE.md`。桌面应用是否在某个版本改过发现顺序，未查证。
 
+`CODEBUDDY.md`：不读取。沿用 Codex 文档那套发现规则，默认文件名是 `AGENTS.md` 和 `AGENTS.override.md`，`CODEBUDDY.md` 不在里面，桌面页也没有提到这个名字。要让它生效，得写进 `project_doc_fallback_filenames`，桌面应用是否暴露这个设置，未查证。
+
 桌面应用可以从 Claude Code、Claude Cowork 和 Cursor 导入指令、设置、skill、插件、项目和近期工作。导入是迁移进 Codex 文件，不是在运行时改读对方的文件名。
 
 `/init` 在应用 composer 的命令名单里。
@@ -42,6 +46,8 @@ docs:
 和 CLI 相同。仓库从当前目录向上扫描 `.agents/skills`，用户级是 `~/.agents/skills`，管理员级是 `/etc/codex/skills`，另外有捆绑的 SYSTEM skill。
 
 桌面应用侧边栏有 Skills，可以查看各项目里的 skill。Codex 聊天用 `$skill-name` 显式调用。`agents/openai.yaml` 给桌面应用提供显示名、图标和依赖。
+
+发现表按范围穷举，表里没有 `.claude/skills`、`~/.claude/skills`、`.cursor/skills`、`~/.cursor/skills`、`.grok/skills`、`~/.grok/skills`、`.codebuddy/skills`、`~/.codebuddy/skills`。这八条记为不读取。
 
 插件可在桌面应用的 Codex 里安装。插件可以带 skill、MCP 和 hooks。
 
@@ -55,6 +61,7 @@ docs:
 - 定时任务：有。侧边栏 Scheduled 管理任务。桌面应用的任务可以跑在本地项目目录或隔离的 Git worktree 里，电脑需要开着，应用需要运行。Codex 聊天可以创建或更新定时任务。事件触发的任务只在 ChatGPT 网页和移动端，桌面应用没有。
 - memory：有，默认关。设置里的 Personalization 打开 Enable memories，或在 `config.toml` 设 `[features] memories = true`。当前聊天用 `/memories`。本地记忆存在 `~/.codex/memories/`，和 ChatGPT 网页记忆不是同一份。
 - goals：命令页把 `/goal` 列在应用 composer 的 slash 命令里。`features.goals` 的默认值写在 Codex 配置页，桌面应用是否暴露同一个开关，未查证。
+- 插件市场：未查证。插件能在桌面应用的 Codex 里安装，见第 3 节。有没有远程市场这一层，本次读不到文档正文，理由同 [CLI 档案](../cli/profile.md) 第 4 节。
 
 来源：https://learn.chatgpt.com/docs/prompting ，https://learn.chatgpt.com/docs/automations ，https://learn.chatgpt.com/docs/customization/memories ，https://learn.chatgpt.com/docs/developer-commands ，https://learn.chatgpt.com/docs/build-skills
 
@@ -67,8 +74,10 @@ docs:
 - MCP：有。见第 8 节。
 - 浏览器：部分。桌面应用有浏览器，文档也有 Computer Use 和 in-app browser 页面。这些页面没有按 Chat 和 Codex 两种模式拆开，所以 Codex 聊天里是否同一套，未查证。
 - 网页搜索：未查证。`web_search` 写在 Codex 配置里。配置页明确共享配置层的是 CLI 和 IDE extension，没有点名桌面应用。
+- 外部消息渠道：未查证。桌面应用有定时和事件触发的任务，事件触发的任务只在 ChatGPT 网页和移动端，桌面应用没有。把 IM 或 webhook 事件推进正在运行的本地会话，文档没有写这类机制，也没有写「没有」。
+- 常驻守护进程：未查证。桌面应用本身是常驻 GUI，但定时任务那节写明电脑要开着、应用要运行。有没有脱离应用窗口的后台进程或可注册的系统服务，文档没写。
 
-来源：https://learn.chatgpt.com/docs/app ，https://learn.chatgpt.com/docs/use-chatgpt ，https://learn.chatgpt.com/docs/agent-configuration/subagents ，https://learn.chatgpt.com/docs/app-server ，https://learn.chatgpt.com/docs/config-file/config-basic
+来源：https://learn.chatgpt.com/docs/app ，https://learn.chatgpt.com/docs/use-chatgpt ，https://learn.chatgpt.com/docs/agent-configuration/subagents ，https://learn.chatgpt.com/docs/app-server ，https://learn.chatgpt.com/docs/config-file/config-basic ，https://learn.chatgpt.com/docs/plugins ，https://learn.chatgpt.com/docs/automations
 
 ## 6. 配置
 
@@ -159,3 +168,4 @@ Codex hooks 对本地 Codex 工作流生效，配置位置与 CLI 相同。桌�
 | Subagents | https://learn.chatgpt.com/docs/agent-configuration/subagents | 2026-10-05 |
 | Hooks | https://learn.chatgpt.com/docs/hooks | 2026-10-05 |
 | Approvals and security | https://learn.chatgpt.com/docs/agent-approvals-security | 2026-10-05 |
+| Plugins | https://learn.chatgpt.com/docs/plugins | 2026-10-05 |

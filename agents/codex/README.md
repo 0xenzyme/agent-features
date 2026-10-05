@@ -29,11 +29,15 @@ CLI 和桌面应用可以携带不同的 Codex 版本。故障排除页写明：
 
 ### 指令文件
 
-两份已写档案使用同一套发现规则：全局 `~/.codex/AGENTS.override.md` 或 `AGENTS.md`，然后从项目根走到当前目录，每层最多一个文件。默认文件名不包括 `CLAUDE.md`。
+两份已写档案使用同一套发现规则：全局 `~/.codex/AGENTS.override.md` 或 `AGENTS.md`，然后从项目根走到当前目录，每层最多一个文件。默认文件名不包括 `CLAUDE.md`，也不包括 `CODEBUDDY.md`。要让别的文件名生效，把它写进 `project_doc_fallback_filenames`，所以这两格是「不读取」而不是「文档没提」。
 
 ### Skill
 
 当前发现路径是 `.agents/skills` 和 `~/.agents/skills`。插件是安装分发单位。2025-12-19 的 changelog 曾写 `~/.codex/skills` 和 `.codex/skills`。现行发现表没有这两条路径。旧路径在 0.160.0 是否仍被扫描，未查证。
+
+2026-10-05 回填：发现表按范围穷举，`.claude/skills`、`~/.claude/skills`、`.cursor/skills`、`~/.cursor/skills`、`.grok/skills`、`~/.grok/skills`、`.codebuddy/skills`、`~/.codebuddy/skills` 这八条都不在表里，两列全部记为不读取。
+
+插件市场这一层未查证：插件是分发单位，但远程市场的机制这次读不到文档正文（learn.chatgpt.com 的插件页是客户端渲染）。
 
 ### 协议时间线
 

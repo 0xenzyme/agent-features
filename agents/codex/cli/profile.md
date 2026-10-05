@@ -15,6 +15,8 @@ docs:
 
 未查证项：`wire_api = "chat"` 的删除版本；TUI 是否呈现 `tool/requestUserInput` 问卷；`.codex/skills` 旧路径是否仍被扫描。
 
+2026-10-05 回填：发现表按范围穷举，上面那六条路径加 `.codebuddy/skills`、`~/.codebuddy/skills` 都不在表里，全部记为不读取。详见第 3 节。
+
 ## 1. 身份与版本
 
 - 官方名：Codex CLI。
@@ -35,7 +37,9 @@ Codex 在一次运行开始时组装指令链。TUI 里通常是每个启动的�
 
 空文件跳过。合并体积默认停在 `project_doc_max_bytes` 的 32 KiB。
 
-`CLAUDE.md` 不在默认发现名单里。要让别的文件名生效，把它写进 `project_doc_fallback_filenames`。`/import` 可以把 Claude Code 的 `CLAUDE.md` 导入为 `AGENTS.md`，这是迁移，不是运行时直接读取。`/init` 在当前目录生成 `AGENTS.md`。
+`CLAUDE.md` 不在默认发现名单里。要让别的文件名生效，把它写进 `project_doc_fallback_filenames`。
+
+`CODEBUDDY.md`：不读取。默认发现名单只有 `AGENTS.md` 和 `AGENTS.override.md`，`CODEBUDDY.md` 不在里面。它也不能算「文档没提到」——文档写清了默认名单，只是这条路留了口子：把 `CODEBUDDY.md` 写进 `project_doc_fallback_filenames` 就能生效。`/import` 可以把 Claude Code 的 `CLAUDE.md` 导入为 `AGENTS.md`，这是迁移，不是运行时直接读取。`/init` 在当前目录生成 `AGENTS.md`。
 
 来源：https://learn.chatgpt.com/docs/agent-configuration/agents-md ，https://learn.chatgpt.com/docs/developer-commands ，https://learn.chatgpt.com/docs/app-server
 
@@ -52,6 +56,8 @@ Skill 是带 `SKILL.md` 的目录。`name` 和 `description` 必填。Codex 先�
 
 同名 skill 不合并，选择器里可以同时出现。支持符号链接。`[[skills.config]]` 可按 `SKILL.md` 路径关闭某个 skill。
 
+发现表按范围穷举，表里没有 `.claude/skills`、`~/.claude/skills`、`.cursor/skills`、`~/.cursor/skills`、`.grok/skills`、`~/.grok/skills`、`.codebuddy/skills`、`~/.codebuddy/skills`。这八条记为不读取。`.codex/skills` 和 `~/.codex/skills` 是另一回事：2025-12-19 的 changelog 用过它们，现行发现表没有，旧路径是否仍生效是未查证。
+
 插件是分发单位，可以打包 skill、MCP 和 hooks。CLI 可以使用插件。
 
 显式调用：`/skills`，或在提示里写 `$skill-name`。也可以按描述隐式选用。
@@ -66,6 +72,7 @@ Skill 是带 `SKILL.md` 的目录。`name` 和 `description` 必填。Codex 先�
 - 定时任务：无管理界面。文档要求到 ChatGPT 网页或桌面应用里创建和查看。CLI 可以先帮你准备提示、skill 或脚本。
 - memory：有，默认关。`[features] memories = false`，成熟度是 Experimental。交互会话用 `/memories`。文件在 `~/.codex/memories/`。这不是 `AGENTS.md` 的替代。
 - goals：有。`/goal` 给当前任务一个持续目标。`features.goals` 默认 true。
+- 插件市场：未查证。插件本身有，见第 3 节。有没有「从远程市场添加并安装」这一层（其它家写成 `/plugin marketplace add` 之类），本次读不到文档正文：learn.chatgpt.com 的技能与插件页是客户端渲染，抓不到条目，只拿到导航。缺的是一份能读到正文的插件页。
 
 来源：https://learn.chatgpt.com/docs/build-skills ，https://learn.chatgpt.com/docs/developer-commands ，https://learn.chatgpt.com/docs/config-file/config-basic ，https://learn.chatgpt.com/docs/automations ，https://learn.chatgpt.com/docs/customization/memories
 
@@ -79,8 +86,10 @@ Skill 是带 `SKILL.md` 的目录。`name` 和 `description` 必填。Codex 先�
 - 浏览器：CLI 页没有应用内浏览器。custom agent 示例里的浏览器证据走 MCP，不是内置浏览器。
 - 网页搜索：有。`web_search` 默认 `cached`，也可设 `indexed`、`live` 或 `disabled`。`--search` 等于 live。
 - 图像：changelog 在 CLI 0.158.0 写入图像生成和编辑。截至 0.160.0 的 changelog 没有写移除。
+- 外部消息渠道：未查证。文档写了定时和事件触发的任务，但那套在 ChatGPT 网页、移动端和桌面应用里管理，不是把 IM 或 webhook 事件推进正在运行的本地会话。文档没有写这类机制，也没有写「没有」。缺的是一份写明有或没有的页面。
+- 常驻守护进程：未查证。文档里的入口是交互 TUI、`codex exec` 一次性运行，以及 app-server。app-server 是另一个入口，本轮不建表面（见 [Codex README](../README.md)），不能拿它填这一格。有没有可注册成系统服务的常驻进程，文档没写。
 
-来源：https://learn.chatgpt.com/docs/agent-approvals-security ，https://learn.chatgpt.com/docs/app-server ，https://learn.chatgpt.com/docs/hooks ，https://learn.chatgpt.com/docs/config-file/config-basic ，https://learn.chatgpt.com/docs/changelog
+来源：https://learn.chatgpt.com/docs/agent-approvals-security ，https://learn.chatgpt.com/docs/app-server ，https://learn.chatgpt.com/docs/hooks ，https://learn.chatgpt.com/docs/config-file/config-basic ，https://learn.chatgpt.com/docs/changelog ，https://learn.chatgpt.com/docs/plugins ，https://learn.chatgpt.com/docs/automations
 
 ## 6. 配置
 
@@ -198,4 +207,5 @@ Windows 原生沙箱在 `[windows] sandbox` 里选 `elevated` 或 `unelevated`�
 | Memories | https://learn.chatgpt.com/docs/customization/memories | 2026-10-05 |
 | Scheduled tasks | https://learn.chatgpt.com/docs/automations | 2026-10-05 |
 | App server | https://learn.chatgpt.com/docs/app-server | 2026-10-05 |
+| Plugins | https://learn.chatgpt.com/docs/plugins | 2026-10-05 |
 | Non-interactive mode | https://learn.chatgpt.com/docs/non-interactive-mode | 2026-10-05 |
